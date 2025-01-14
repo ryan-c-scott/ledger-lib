@@ -1,0 +1,2 @@
+# ledger-lib
+Helper library for processing 'ledger emacs' output in Emacs

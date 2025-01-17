@@ -102,6 +102,7 @@
              ,account
              ,amount)))))))
 
+;;;###autoload
 (cl-defun ledgerlib-cmd (cmd &key no-process calendar-days)
   ""
   (let* ((cmd (concat "ledger emacs " cmd))
@@ -124,6 +125,7 @@
        (ledgerlib-days-to-time-units days ledgerlib-time-units-standard-workdays-convenient))
       (_ days))))
 
+;;;###autoload
 (cl-defun ledgerlib-balances (data &key with-total calendar-days units)
   ""
   (let ((data (if (stringp data)
@@ -153,6 +155,7 @@
        ,@(when with-total
            `(("TOTAL" ,(funcall converter sum))))))))
 
+;;;###autoload
 (cl-defun ledgerlib-register (data &key calendar-days units)
   ""
   (let ((data (if (stringp data)

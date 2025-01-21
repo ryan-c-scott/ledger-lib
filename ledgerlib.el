@@ -36,21 +36,23 @@
 (cl-defun ledgerlib-days-to-time-units (days &optional units)
   (cl-loop
    with units = (or units ledgerlib-time-units-calendar)
-   with result = days
+   with result = (abs days)
+   with sign = (signum days)
    with result-label = "d"
    for (label . step) in units
    as current = (/ result step)
-   while (> (abs (floor current)) 0)
+   while (> (floor current) 0)
    do (setq result current
             result-label label)
    finally return
    ;; Drop any empty remainder
-   (format
-    (cond
-     ((> (cadr (cl-floor result)) 0) "%.2g%s")
-     ((= result 0) "%d")
-     (t "%d%s"))
-    result result-label)))
+   (let ((result (* result sign)))
+     (format
+      (cond
+       ((> (cadr (cl-floor result)) 0) "%.2g%s")
+       ((= result 0) "%d")
+       (t "%d%s"))
+      result result-label))))
 
 (cl-defun ledgerlib-days-to-workday-units (days)
   ""

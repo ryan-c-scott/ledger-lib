@@ -6,7 +6,7 @@
   line
   date
   ;; _?
-  description
+  payee
   transactions)
 
 (cl-defstruct ledgerlib-tx
@@ -69,12 +69,12 @@
 (cl-defun ledgerlib-process-raw (raw &key calendar-days)
   ""
   (cl-loop
-   for (file line time _ description . txs) in raw
+   for (file line time _ payee . txs) in raw
    collect (make-ledgerlib-entry
             :file file
             :line line
             :date (format-time-string "%F" time)
-            :description description
+            :payee payee
             :transactions (cl-loop
                            for (line account amount _) in txs
                            ;; TODO: Support other amount representations
@@ -92,11 +92,11 @@
   ""
   (cl-loop
    for entry in data collect
-   (pcase-let (((cl-struct ledgerlib-entry file line date description transactions) entry))
+   (pcase-let (((cl-struct ledgerlib-entry file line date payee transactions) entry))
      `(,file
        ,line
        ,date
-       ,description
+       ,payee
        ,(cl-loop
          for tx in transactions collect
          (pcase-let (((cl-struct ledgerlib-tx line account amount) tx))
@@ -138,7 +138,7 @@
      with totals = (make-hash-table :test 'equal)
      with sum = 0
      for entry in data
-     do (pcase-let* (((cl-struct ledgerlib-entry date description transactions) entry))
+     do (pcase-let* (((cl-struct ledgerlib-entry date payee transactions) entry))
           (--map
            (pcase-let* (((cl-struct ledgerlib-tx account amount) it))
              (cl-incf sum amount)
@@ -168,10 +168,10 @@
      (string< (car it) (car other))
      (cl-loop
       for entry in data append
-      (pcase-let* (((cl-struct ledgerlib-entry date description transactions) entry))
+      (pcase-let* (((cl-struct ledgerlib-entry date payee transactions) entry))
         (--map
          (pcase-let* (((cl-struct ledgerlib-tx account amount) it))
-           `(,date ,description ,account ,(funcall converter amount)))
+           `(,date ,payee ,account ,(funcall converter amount)))
          transactions))))))
 
 ;;

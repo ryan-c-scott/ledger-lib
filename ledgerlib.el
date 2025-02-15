@@ -104,6 +104,20 @@
              ,account
              ,amount)))))))
 
+(cl-defun ledgerlib-entry-to-ledger (entry)
+  ""
+  (concat
+   (format "%s %s\n"
+           (ledgerlib-entry-date entry)
+           (ledgerlib-entry-payee entry))
+   (cl-loop
+    for tx in (ledgerlib-entry-transactions entry)
+    as amount = (/ (ledgerlib-tx-amount tx) 60 60 24)
+    concat
+    (format "    %s  %sD\n"
+            (ledgerlib-tx-account tx)
+            amount))))
+
 ;;;###autoload
 (cl-defun ledgerlib-cmd (cmd &key no-process calendar-days)
   ""
